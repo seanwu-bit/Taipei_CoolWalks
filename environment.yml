@@ -1,0 +1,37 @@
+name: geospatial
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - geopandas
+  - rasterio
+  - matplotlib
+  - pandas
+  - numpy
+  - scipy
+  - scikit-learn
+  - jupyter
+  - jupyterlab
+  - folium
+  - shapely
+  - fiona
+  - pyproj
+  - gdal
+  - libgdal
+  - rasterstats
+  - contextily
+  - seaborn
+  - plotly
+  - dash
+  - python-dotenv
+  - requests
+  - pillow
+  - pip
+  - pip:
+      - earthpy
+      - whitebox
+      - pyshp
+      - osmnx
+      - geopy
+      - cartopy
