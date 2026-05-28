@@ -108,7 +108,10 @@ M4_map_visualizer.py   ───> 產出 M4_routing_result.html         (全區�
 | | 極端避暑模式 | 3,247.5 | 4,591.28 | 為避開高溫與無遮陰路廊，多繞行 215 公尺 |
 | | 弱勢行人模式 | 3,031.9 | 3,460.29 | 避開大安森林公園周邊無人行道側的次要巷弄 |
 
-### 2. 成果地圖網頁 (`outputs/M4_routing_result.html`) 亮點與 Gemini 建議
+### 2. 成果地圖網頁 亮點與 Gemini 建議
+> 🌐 **線上互動式成果地圖網頁**：[https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html](https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html) 
+> *(提示：請在小組 GitHub 儲存庫的 **Settings -> Pages** 中，將 Build and deployment 來源設為 `Deploy from a branch`，並選擇 `main` 分支與 `/ (root)` 目錄，即可啟用此線上地圖網頁)*
+
 * **道路步行阻力底圖**：以綠色至紅色的漸層線條顯示大安區所有道路的單位步行阻力（綠色為舒適安全，紅色為環境壓力大）。
 * **互動線段點擊 Popup (路徑健康卡片)**：在地圖上點擊藍色 (Case 1) 或紫色 (Case 2) 路線，會彈出美化卡片展示該路線的長度、阻力、**長度加權環境平均暴露值**與 **Gemini 醫療保健出行建議**。
 * **起終點 Marker 點擊 Popup**：點擊綠色起點與紅色終點 Marker，會顯示包含 Gemini 建議的精簡版資訊。
