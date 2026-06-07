@@ -1,0 +1,22 @@
+# Sensitive environment and secret files
+.env
+.env.*
+*.env
+*.key
+*.pem
+secrets.*
+
+# Python cache and local virtual environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Local editor / OS files
+.DS_Store
+Thumbs.db
+
+Output_Data/
