@@ -201,6 +201,12 @@ def run_map_visualizer(network_path, paths_path, html_output_path):
             "color_main": "#9467bd",       # 深紫色
             "start_desc": "起點：台大土研大樓",
             "end_desc": "終點：永康街商圈"
+        },
+        "case3": {
+            "name": "Case 3: 均衡通勤模式 (永康至東區)",
+            "color_main": "#e65c00",       # 橘紅色
+            "start_desc": "起點：永康街商圈",
+            "end_desc": "終點：東區商圈"
         }
     }
     

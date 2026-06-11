@@ -68,6 +68,27 @@ $$Avg\_Value = \frac{\sum_{i=1}^{k-1} (Value_i \times length_i)}{\sum_{i=1}^{k-1
 
 ---
 
+## 📂 專案目錄結構 (Project Directory Structure)
+
+* **[data/](file:///c:/CODE/114-2_RS/Final%20Project_v2/data)**：存放原始與已轉換的大安區路網數據。
+  * [Daan_Shaded_Network(還原)_dynamic_v1.graphml](file:///c:/CODE/114-2_RS/Final%20Project_v2/data/Daan_Shaded_Network(%E9%82%84%E5%8E%9F)_dynamic_v1.graphml)：包含建成環境與氣候特徵的原始 XML 路網。
+* **[scripts/](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts)**：包含核心執行模組與輔助庫。
+  * [M1_data_validator.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/M1_data_validator.py)：資料完整性檢查與缺失值補植 (Imputation)。
+  * [M2_cost_calculator.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/M2_cost_calculator.py)：通行阻力成本函數建置與三情境（Balanced, Heat-Averse, Safety-First）權重計算。
+  * [M3_path_router.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/M3_path_router.py)：最短路徑 Dijkstra 求解、暴露指標加權平均、Gemini 醫療保健建議生成。
+  * [M4_map_visualizer.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/M4_map_visualizer.py)：互動式 folium 地圖繪製與效能優化 (Multi-Polyline)。
+  * [graphml_utils.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/graphml_utils.py)：Windows 環境下 networkx 讀寫 GraphML 防崩潰之輔助程式庫。
+  * [run_pipeline.py](file:///c:/CODE/114-2_RS/Final%20Project_v2/scripts/run_pipeline.py)：一鍵式全自動 Pipeline 執行腳本。
+* **[outputs/](file:///c:/CODE/114-2_RS/Final%20Project_v2/outputs)**：Pipeline 運作產生的中間與最終檔。
+  * [M1_validated_network.graphml](file:///c:/CODE/114-2_RS/Final%20Project_v2/outputs/M1_validated_network.graphml)：已驗證填補之路網。
+  * [M2_costed_network.graphml](file:///c:/CODE/114-2_RS/Final%20Project_v2/outputs/M2_costed_network.graphml)：已計算成本之路網。
+  * [M3_optimal_paths.json](file:///c:/CODE/114-2_RS/Final%20Project_v2/outputs/M3_optimal_paths.json)：求解之最佳路徑及 Gemini 建議 JSON。
+  * [M4_routing_result.html](file:///c:/CODE/114-2_RS/Final%20Project_v2/outputs/M4_routing_result.html)：最終互動式成果地圖網頁。
+* **[environment.yml](file:///c:/CODE/114-2_RS/Final%20Project_v2/environment.yml)**：Conda 虛擬環境配置文件。
+* **[Pedestrian_Routing_Project_Guideline_v2.md](file:///c:/CODE/114-2_RS/Final%20Project_v2/Pedestrian_Routing_Project_Guideline_v2.md)**：專案需求指引與規格書。
+
+---
+
 ## 🗂️ Pipeline 架構設計
 
 本系統程式設計高度模組化，分成四個主要執行模組（皆置於 `scripts/`，並在 `outputs/` 中產出中間與最終成果檔案）：
@@ -88,6 +109,7 @@ M3_path_router.py      ───> 產出 M3_optimal_paths.json          (路徑�
 M4_map_visualizer.py   ───> 產出 M4_routing_result.html         (全區阻力底圖與互動式地圖視覺化)
 ```
 
+* **Windows C-level 崩潰防範**：由於原生 `networkx` 讀寫 `GraphML` 在 Windows DLL 下容易崩潰，本專案引進自訂的 `graphml_utils.py` 輔助程式庫，透過 XML 解析與類型手動轉換，實現了 GraphML 在 Windows 系統下的 100% 穩定讀寫。
 * **Gemini API 快取與 Fallback 機制**：系統會比對先前生成的路徑 JSON，若路線未改變則直接沿用快取以節約 API 額度；若無網路或金鑰失效，會自動使用規則引擎生成備用防護建議，保證 Pipeline 正常執行不中斷。
 * **效能優化技術 (Multi-Polyline)**：將單位阻力成本分入 20 個色彩分桶 (Color Bins)，將同色路段合併為單一 Multi-Polyline 渲染，將 HTML 壓縮至 **1.97MB**，保證載入與滑動體驗極致流暢。
 * **絕對分級機制**：色彩圖例（Colormap）範圍完全鎖死在 `vmin = 1.0` (極度舒適, 綠色) 至 `vmax = 3.0` (極高懲罰, 紅色)，客觀呈現全區環境阻力的真實分布。
@@ -96,7 +118,7 @@ M4_map_visualizer.py   ───> 產出 M4_routing_result.html         (全區�
 
 ## 📊 專案分析與求解成果 (Results)
 
-透過執行 Pipeline，我們針對大安區兩個指標性的行人起終點（O-D Pair）進行了路徑規劃求解：
+透過執行 Pipeline，我們針對大安區三個行人起終點（O-D Pair）進行了路徑規劃求解：
 
 ### 1. 各情境求解結果對比表格
 | 規劃案例 (O-D Case) | 評估情境 (Scenario) | 求解路線長度 (m) | 總通行阻力成本 (Cost) | 備註說明 |
@@ -107,13 +129,16 @@ M4_map_visualizer.py   ───> 產出 M4_routing_result.html         (全區�
 | **Case 2: 土研大樓至永康街**<br>(起點: 12263412046<br>終點: 5051817857) | **均衡通勤模式** | **3,031.9** | **3,859.08** | **地圖視覺化疊加之主線路徑** |
 | | 極端避暑模式 | 3,247.5 | 4,591.28 | 為避開高溫與無遮陰路廊，多繞行 215 公尺 |
 | | 弱勢行人模式 | 3,031.9 | 3,460.29 | 避開大安森林公園周邊無人行道側的次要巷弄 |
+| **Case 3: 永康街至東區**<br>(起點: 5051817857<br>終點: 5849716085) | **均衡通勤模式** | **3,167.0** | **4,155.96** | **地圖視覺化疊加之主線路徑** |
+| | 極端避暑模式 | 3,209.9 | 5,091.14 | 繞行建物陰影避開直射強烈光照 |
+| | 弱勢行人模式 | 3,149.4 | 3,671.46 | 沿著防護得分較高的安全人行空間前進 |
 
 ### 2. 成果地圖網頁 亮點與 Gemini 建議
-> 🌐 **線上互動式成果地圖網頁**：[https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html](https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html) 
-> *(提示：請在小組 GitHub 儲存庫的 **Settings -> Pages** 中，將 Build and deployment 來源設為 `Deploy from a branch`，並選擇 `main` 分支與 `/ (root)` 目錄，即可啟用此線上地圖網頁)*
+> 🌐 **線上互動式成果地圖網頁**：[https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html](https://seanwu-bit.github.io/Taipei_CoolWalks/outputs/M4_routing_result.html)
+> *(提示：請在小組 GitHub 儲存庫的 **Settings -> Pages** 中，將 Build and deployment 來源設為 `Deploy from a branch`，並選擇 `main` 分支或合併後的分支，將目錄設為 `/ (root)` 或 `/docs` 以啟動 Pages 服務)*
 
 * **道路步行阻力底圖**：以綠色至紅色的漸層線條顯示大安區所有道路的單位步行阻力（綠色為舒適安全，紅色為環境壓力大）。
-* **互動線段點擊 Popup (路徑健康卡片)**：在地圖上點擊藍色 (Case 1) 或紫色 (Case 2) 路線，會彈出美化卡片展示該路線的長度、阻力、**長度加權環境平均暴露值**與 **Gemini 醫療保健出行建議**。
+* **互動線段點擊 Popup (路徑健康卡片)**：在地圖上點擊藍色 (Case 1)、紫色 (Case 2) 或橘紅色 (Case 3) 路線，會彈出美化卡片展示該路線的長度、阻力、**長度加權環境平均暴露值**與 **Gemini 醫療保健出行建議**。
 * **起終點 Marker 點擊 Popup**：點擊綠色起點與紅色終點 Marker，會顯示包含 Gemini 建議的精簡版資訊。
 * **Gemini 生成之健康建議成果展示**：
   - **Case 1 (台大至師大)**：
@@ -122,6 +147,9 @@ M4_map_visualizer.py   ───> 產出 M4_routing_result.html         (全區�
   - **Case 2 (土研大樓至永康街)**：
     > **路段健康評估**：此路線紫外線指數高達 10.0，且平均乾濕球溫度為 26.0°C，考量整體遮陰率約 55%，請特別留意高溫與強烈日曬風險。空氣品質優良，人行空間安全。
     > **防護出行建議**：通勤者、孩童及銀髮族出行時，務必加強防曬，建議配戴寬邊帽、太陽眼鏡，塗抹高係數防曬乳，並穿著輕便、透氣、淺色衣物。請隨時補充水分，避免脫水。孩童與銀髮族應盡量避開中午前後（上午十點至下午兩點）日照最強時段，以降低中暑與熱傷害風險。
+  - **Case 3 (永康街至東區)**：
+    > **路段健康評估**：此「商圈跨區路徑」平均 WBGT 達 26.0°C，紫外線指數更高達 10.0，顯示環境高溫且具極端曝曬風險。儘管綠意與建物遮陰率合計約 50%，仍需注意防範。PM2.5 濃度極低，空氣品質優良。道路安全得分 1.00，人行空間規劃良好，安全無虞。
+    > **防護出行建議**：一般通勤者建議穿著輕薄衣物並多補充水分；務必塗抹防曬乳、佩戴帽子與太陽眼鏡。孩童對高溫敏感，應頻繁補充水分，並於遮蔽處休息，加強物理性防曬。銀髮族建議避開最炎熱時段出行，隨身攜帶水瓶，並做好全面防曬。此路徑空品與道路安全皆佳，請安心步行。
 
 ---
 
